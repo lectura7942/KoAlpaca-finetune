@@ -28,6 +28,8 @@ import sys
 from dataclasses import dataclass, field
 from itertools import chain
 from typing import Optional
+from datetime import datetime
+from pytz import timezone
 
 import datasets
 import evaluate
@@ -237,6 +239,10 @@ def main():
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    name = training_args.output_dir.split("/")[-1]
+
+    training_args.run_name = f"{name}_[e{training_args.num_train_epochs},b{training_args.per_device_train_batch_size},ga{training_args.gradient_accumulation_steps}, lr{training_args.learning_rate}]_" + datetime.now(timezone('Asia/Seoul')).strftime('%m-%d-%H:%M')
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
